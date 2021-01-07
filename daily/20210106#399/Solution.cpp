@@ -18,34 +18,76 @@ public:
     {
         vector<double> ret = vector<double>();
         unordered_map<string, double> m = unordered_map<string, double>();
+        unordered_map<string, string> m2 = unordered_map<string, string>();
         double a, b;
         for (int i = 0; i < equations.size(); ++i)
         {
-            a = m[equations[i][0]];
-            b = m[equations[i][1]];
-            if (a == b == 0)
+            string &s1 = equations[i][0];
+            string &s2 = equations[i][1];
+            a = m[s1];
+            b = m[s2];
+            if (a == 0 && b == 0)
             {
-                m[equations[i][0]] = values[i];
-                m[equations[i][1]] = 1;
+                m[s1] = values[i];
+                m[s2] = 1;
+                m2[s1] = s2;
+                m2[s2] = s2;
             }
             else if (a == 0)
             {
-                m[equations[i][0]] = m[equations[i][1]] * values[i];
+                m[s1] = b * values[i];
+                m2[s1] = m2[s2];
             }
             else if (b == 0)
             {
-                m[equations[i][1]] = m[equations[i][0]] / values[i];
+                m[s2] = a / values[i];
+                m2[s2] = m2[s1];
             }
             else
             {
-                printf("错误：%f %f\n", a, b);
+                int num1 = 0, num2 = 0;
+                for (auto &mm : m2)
+                {
+                    if (mm.second == m2[s1])
+                        ++num1;
+                    if (mm.second == m2[s2])
+                        ++num2;
+                }
+                if (num1 < num2)
+                {
+                    for (auto &mm : m2)
+                    {
+                        if (mm.second == m2[s1])
+                        {
+                            m[mm.first] *= values[i] / (a / b);
+                            if (mm.first != s1)
+                                mm.second = m2[s2];
+                        }
+                    }
+                    m2[s1] = m2[s2];
+                }
+                else
+                {
+                    for (auto &mm : m2)
+                    {
+                        if (mm.second == m2[s2])
+                        {
+                            m[mm.first] *= (a / b) / values[i];
+                            if (mm.first != s2)
+                                mm.second = m2[s1];
+                        }
+                    }
+                    m2[s2] = m2[s1];
+                }
             }
         }
         for (int i = 0; i < queries.size(); ++i)
         {
-            a = m[queries[i][0]];
-            b = m[queries[i][1]];
-            if (a != 0 && b != 0)
+            string &s1 = queries[i][0];
+            string &s2 = queries[i][1];
+            a = m[s1];
+            b = m[s2];
+            if (m2.count(s1)!=0 && m2.count(s2)!=0 && m2[s1] == m2[s2])
             {
                 ret.push_back(a / b);
             }
