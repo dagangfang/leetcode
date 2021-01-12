@@ -21,92 +21,92 @@ public:
         if (n == 0)
             return s;
         map<int, int> map1 = map<int, int>();
-        unordered_map<int, vector<char>> map2 = unordered_map<int, vector<char>>();
+        unordered_map<int, vector<int>> map2 = unordered_map<int, vector<int>>();
+        unordered_map<int, int> map3 = unordered_map<int, int>();
+
         int l, r;
         for (int i = 0; i < n; ++i)
         {
             l = pairs[i][0];
             r = pairs[i][1];
-            printf("%d %d \n", l, r);
             if (map1.count(l))
             {
                 if (map1.count(r))
                 {
-                    printf("#3#%d %d \n", map1[r], map1[l]);
                     if (map1[l] != map1[r])
                     {
-                        printf("##%d %d \n", map1[r], map1[l]);
-                        int tr = map1[r];
+                        int min, max;
+                        if (map3[map1[l]] > map3[map1[r]])
+                        {
+                            min = map1[r];
+                            max = map1[l];
+                        }
+                        else
+                        {
+                            min = map1[l];
+                            max = map1[r];
+                        }
                         for (auto &a : map1)
                         {
-                            printf("%d %d %d %d %d %d \n", a.first, a.second, r,map1[r],l, map1[l]);
-                            if (a.second == tr)
+                            if (a.second == min)
                             {
-                                printf("#\n");
-                                a.second = map1[l];
+                                a.second = max;
                             }
                         }
+                        map3[max] += map3[min];
+                        map3.erase(min);
+                        // map3[min] = 0;
                     }
                 }
                 else
                 {
-                    printf("#2#%d %d \n", map1[r], map1[l]);
                     map1[r] = map1[l];
+                    ++map3[l];
                 }
             }
             else
             {
                 if (map1.count(r))
                 {
-                    printf("#1#%d %d \n", map1[r], map1[l]);
                     map1[l] = map1[r];
+                    ++map3[l];
                 }
                 else
                 {
-                    printf("#0#%d %d \n", map1[r], map1[l]);
                     map1[l] = l;
                     map1[r] = l;
+                    map3[l] = 2;
                 }
             }
         }
-
         for (auto &a : map1)
         {
-            printf("%d:%d \n", a.first, a.second);
-        }
-        for (auto &a : map1)
-        {
-            if (map2.count(a.second))
+            if (map2.count(a.second) == 0)
             {
-                map2[a.second].push_back(s[a.first]);
+                map2[a.second] = vector<int>(27,0);
             }
-            else
-            {
-                map2[a.second] = vector<char>{s[a.first]};
-            }
+            map2[a.second][s[a.first] - 97] = map2[a.second][s[a.first] - 97] + 1;
+            // printf("%d %d %c %d %d\n",a.first,a.second,s[a.first],s[a.first] - 97,map2[a.second][s[a.first] - 97]);
         }
-        for (auto &a : map2)
-        {
-            sort(a.second.begin(), a.second.end());
-        }
-
         for (auto &a2 : map2)
         {
-            int i = 0;
-            for (auto &a1 : map1)
+            int index = 0;
+            for (int i = 0; i < 27; ++i)
             {
-                if (a2.first == a1.second)
+                for (int j = 0; j < a2.second[i]; ++j)
                 {
-                    s[a1.first] = map2[a2.first][i];
-                    ++i;
+                    while(map1.count(index) == 0 || map1[index] != a2.first)
+                        ++index;
+                    // printf("赋值 %d %d %d %c %d\n",index,a2.first,i,i + 97,a2.second[i]);
+                    s[index] = (char)(i + 97);
+                    ++index;
+                    
                 }
             }
         }
-        printf("%s \n", s.c_str());
         return s;
     }
 };
-
 int main()
 {
     Solution s = Solution();
