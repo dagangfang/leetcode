@@ -19,27 +19,35 @@ using namespace std;
 
 class Solution {
 public:
-    Solution(vector<int>& nums) {
-        for (int i = 0;i < nums.size();++i)
+    int projectionArea(vector<vector<int>>& grid) {
+        int top = 0;
+        int front = 0;
+        int side = 0;
+        for (int x = 0;x < grid.size();++x)
         {
-            int t = nums[i];
-            if (data.count(t))
+            int maxY = 0;
+            int maxX = 0;
+            for (int y = 0;y < grid[x].size();++y)
             {
-                data[t].push_back(i);
-            }
-            else
-            {
-                data[t] = { i };
-            }
-            
-        }
-    }
 
-    int pick(int target) {
-        vector<int> ret = data[target];
-        return ret[rand() % ret.size()];
+                int v = grid[x][y];
+                if (v != 0) ++top;
+                if (maxY < v)
+                {
+                    maxY = v;
+                }
+                int v2 = grid[y][x];
+                if (maxX < v2)
+                {
+                    maxX = v2;
+                }
+                // printf("%d %d %d %d %d\n",x,y,top,maxX,maxY);
+            }
+            front += maxY;
+            side += maxX;
+        }
+        return top + front + side;
     }
-    unordered_map<int, vector<int>> data;
 };
 
 
