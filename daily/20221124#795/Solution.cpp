@@ -21,27 +21,26 @@ using namespace std;
 
 class Solution {
 public:
-    int countBalls(int lowLimit, int highLimit) {
-        unordered_map<int, int> m;
-        for (int i = lowLimit;i <= highLimit;++i)
-        {
-            int t = i;
-            int num = 0;
-            while (t > 0)
-            {
-                num += t % 10;
-                t /= 10;
+    int numSubarrayBoundedMax(vector<int>& nums, int left, int right) {
+        int res = 0, last2 = -1, last1 = -1;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] >= left && nums[i] <= right) {
+                last1 = i;
             }
-            m[num]++;
+            else if (nums[i] > right) {
+                last2 = i;
+                last1 = -1;
+            }
+            if (last1 != -1) {
+                res += last1 - last2;
+            }
         }
-        int ret = 0;
-        for (auto a : m)
-        {
-            ret = max(a.second, ret);
-        }
-        return ret;
+        return res;
     }
 };
+
+
+
 
 int main()
 {
